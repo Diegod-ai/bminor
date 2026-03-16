@@ -64,3 +64,29 @@ class Param(Node):
     def __init__(self, name, type):
         self.name = name                  #Esto es para almacenar el nombre del parámetro, por ejemplo "x", "y", etc.
         self.type = type                  #Esto es para almacenar el tipo de dato del parámetro, por ejemplo "int", "float", "bool", "string" etc.
+
+##Nodos para las declaraciones
+
+class VarDecl(Node):
+    def __init__(self, name, type, value=None):
+        self.name = name                  #Esto es para almacenar el nombre de la variable, por ejemplo "x", "y", etc.
+        self.type = type                  #Esto es para almacenar el tipo de dato de la variable, por ejemplo "int", "float", "bool", "string" etc.
+        self.value = value                #Esto es para almacenar el valor de la variable, por ejemplo 10, 20, "hello", etc.   
+
+class  ListDecl(Node):
+    def __init__(self, name, array_type, elements=None,):
+        self.name = name                  #Esto es para almacenar el nombre de la lista de declaraciones
+        self.array_type = array_type      #Esto es para almacenar el tipo de dato del array
+        self.elements = elements          #Esto es para almacenar la lista de elementos
+
+class FuncDecl(Node):
+    def __init__(self, name, func_type, body=None):
+        self.name = name                  #Esto es para almacenar el nombre de la función
+        self.func_type = func_type        #Esto es para almacenar el tipo de dato de la función
+        self.body = body                  #Esto es para almacenar el cuerpo de la función, que puede ser una lista de sentencias o una expresión.
+
+##Nodo para el programa completo
+
+class Program(Node):
+    def __init__(self, decls):
+        self.decls = decls                #Esto es para almacenar la lista de declaraciones del programa    

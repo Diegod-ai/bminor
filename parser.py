@@ -27,7 +27,7 @@ class Parser(sly.Parser):
 	
 	@_("decl_list")
 	def prog(self, p):
-		...
+		return Program(p.decl_list)
 	
 	# =================================================
 	# LISTAS DE DECLARACIONES
@@ -35,11 +35,11 @@ class Parser(sly.Parser):
 	
 	@_("decl decl_list")
 	def decl_list(self, p):
-		...
+		return [p.decl] + p.decl_list
 		
 	@_("empty")
 	def decl_list(self, p):
-		...
+		return []
 		
 	# =================================================
 	# DECLARACIONES
@@ -47,15 +47,15 @@ class Parser(sly.Parser):
 	
 	@_("ID ':' type_simple ';'")
 	def decl(self, p):
-		...
+		return VarDecl(p.ID, p.type_simple)
 		
 	@_("ID ':' type_array_sized ';'")
 	def decl(self, p):
-		...
+		return ListDecl(p.ID, p.type_array_sized)
 		
 	@_("ID ':' type_func ';'")
 	def decl(self, p):
-		...
+		return FuncDecl(p.ID, p.type_func)
 		
 	@_("decl_init")
 	def decl(self, p):
@@ -65,7 +65,7 @@ class Parser(sly.Parser):
 	
 	@_("ID ':' type_simple '=' expr ';'")
 	def decl_init(self, p):
-		...
+		return VarDecl(p.ID, p.type_simple, p.expr)
 		
 	@_("ID ':' CONSTANT '=' expr ';'")
 	def decl_init(self, p):
@@ -73,11 +73,11 @@ class Parser(sly.Parser):
 		
 	@_("ID ':' type_array_sized '=' '{' opt_expr_list '}' ';'")
 	def decl_init(self, p):
-		...
+		return ListDecl(p.ID, p.type_array_sized, p.opt_expr_list)
 		
 	@_("ID ':' type_func '=' '{' opt_stmt_list '}'")
 	def decl_init(self, p):
-		...
+		return FuncDecl(p.ID, p.type_func, p.opt_stmt_list)
 		
 	# =================================================
 	# STATEMENTS
@@ -431,7 +431,7 @@ class Parser(sly.Parser):
 	@_("ARRAY '[' ']' type_simple")
 	@_("ARRAY '[' ']' type_array")
 	def type_array(self, p):
-		return ArrayType(None, p.type_simple)
+		return ArrayType( p[3], None,)
 		
 	@_("ARRAY index type_simple")
 	@_("ARRAY index type_array_sized")
@@ -445,19 +445,19 @@ class Parser(sly.Parser):
 		
 	@_("empty")
 	def opt_param_list(self, p):
-		...
+		return []
 		
 	@_("param_list")
 	def opt_param_list(self, p):
-		...
+		return p.param_list
 		
 	@_("param_list ',' param")
 	def param_list(self, p):
-		...
+		return p.param_list + [p.param]
 		
 	@_("param")
 	def param_list(self, p):
-		...
+		return [p.param]
 		
 	@_("ID ':' type_simple")
 	@_("ID ':' type_array")
