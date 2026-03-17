@@ -146,7 +146,7 @@ class Parser(sly.Parser):
 		
 	@_("for_header open_stmt")
 	def for_stmt_open(self, p):
-		return ForStmt(p.for_header[0], p.for_header[1], p.for_header[2], as_block(p.closed_stmt))
+		return ForStmt(p.for_header[0], p.for_header[1], p.for_header[2], as_block(p.open_stmt))
 		
 	@_("FOR '(' opt_expr ';' opt_expr ';' opt_expr ')'")
 	def for_header(self, p):
@@ -257,7 +257,7 @@ class Parser(sly.Parser):
 	
 	@_("ID")
 	def lval(self, p):
-		return variable(p.ID)
+		return Variable(p.ID)
 		
 	@_("ID index")
 	def lval(self, p):
@@ -391,7 +391,7 @@ class Parser(sly.Parser):
 	
 	@_("ID")
 	def factor(self, p):
-		return variable(p.ID)
+		return Variable(p.ID)
 		
 	@_("LITERAL_INTEGER")
 	def factor(self, p):
@@ -439,7 +439,7 @@ class Parser(sly.Parser):
 	@_("FUNCTION type_simple '(' opt_param_list ')'")
 	@_("FUNCTION type_array_sized '(' opt_param_list ')'")
 	def type_func(self, p):
-		return FuncType(p[1], p[4])
+		return FuncType(p[1], p[3])
 		
 	@_("empty")
 	def opt_param_list(self, p):

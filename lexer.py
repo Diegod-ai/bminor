@@ -7,7 +7,7 @@ class Lexer(sly.Lexer):
     tokens  = {
         # Palabras Reservadas
         ARRAY, BOOLEAN, CHAR, ELSE, FALSE, FLOAT, FOR, FUNCTION, IF,
-        INTEGER, PRINT, RETURN, STRING, TRUE, VOID, WHILE, AUTO, BREAK, CONTINUE, 
+        INTEGER, PRINT, RETURN, STRING, TRUE, VOID, WHILE, AUTO, BREAK, CONTINUE, CONSTANT, 
        
         # Aritméticos
         PLUS, MINUS, TIMES, DIVIDE, MOD, EXPONENT, INC, DEC,
@@ -46,11 +46,12 @@ class Lexer(sly.Lexer):
     # Tipos de Datos
     ID['array']    = ARRAY
     ID['boolean']  = BOOLEAN
-    ID['char']     = CHAR  
+    ID['char']     = CHAR 
     ID['integer']  = INTEGER
     ID['string']   = STRING
     ID['void']     = VOID
     ID['float']    = FLOAT
+    ID['const'] = CONSTANT
     
     # Control de Flujo
     ID['if']       = IF

@@ -26,7 +26,7 @@ class Program(Node):
 
 # Nodos literales. 
 
-class variable(Node):  
+class Variable(Node):  
     def __init__(self, name):
         self.name = name  
 
