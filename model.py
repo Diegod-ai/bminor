@@ -92,12 +92,28 @@ class FuncDecl(Node):
         self.body = body                  #Esto es para almacenar el cuerpo de la función, que puede ser una lista de sentencias o una expresión.
 
 class ConstDecl(Node):
-    def __init__(self, name, type, value):
+    def __init__(self, name, value):
         self.name = name                  #Esto es para almacenar el nombre de la constante
         self.value = value                #Esto es para almacenar el valor de la constante  
 
 ##Nodos para los statements simples
 
 class ReturnStmt(Node):
-    def __init__(self, value=0):
+    def __init__(self, value=None):
         self.value = value                #Esto es para almacenar el valor de retorno de la función, que puede ser una expresión o una lista de sentencias. 
+
+class PrintStmt(Node):
+    def __init__(self, value):
+        self.value = value                #Esto es para almacenar el valor a imprimir, que puede ser una expresión o una lista de sentencias.   
+
+class BreakStmt(Node):
+    def __init__(self):
+        pass    
+
+class ContinueStmt(Node):
+    def __init__(self):
+        pass    
+
+class Block(Node):
+    def __init__(self, statements):
+        self.statements = statements      #Esto es para almacenar la lista de sentencias que conforman el bloque.

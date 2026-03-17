@@ -186,7 +186,7 @@ class Parser(sly.Parser):
 	# PRINT
 	@_("PRINT opt_expr_list ';'")
 	def print_stmt(self, p):
-		...
+		return PrintStmt(p.opt_expr_list)
 		
 	# RETURN
 	@_("RETURN opt_expr ';'")
@@ -195,17 +195,17 @@ class Parser(sly.Parser):
 
 	@_("BREAK ';'")
 	def break_stmt(self, p):
-		...
+		return BreakStmt()
 
 	@_("CONTINUE ';'")
 	def continue_stmt(self, p):
-		...
+		return ContinueStmt()
 
 	# BLOCK
 	@_("'{' stmt_list '}'")
 	def block_stmt(self, p):
-		...
-		
+		return Block(p.stmt_list)
+	
 	# =================================================
 	# EXPRESIONES
 	# =================================================
@@ -220,19 +220,19 @@ class Parser(sly.Parser):
 		
 	@_("expr ',' expr_list")
 	def expr_list(self, p):
-		...
+		return [p.expr] + p.expr_list
 		
 	@_("expr")
 	def expr_list(self, p):
-		...
+		return [p.expr]
 		
 	@_("empty")
 	def opt_expr(self, p):
-		...
+		return None
 		
 	@_("expr")
 	def opt_expr(self, p):
-		...
+		return p.expr
 		
 	# -------------------------------------------------
 	# PRIMARY
@@ -431,16 +431,16 @@ class Parser(sly.Parser):
 	@_("ARRAY '[' ']' type_simple")
 	@_("ARRAY '[' ']' type_array")
 	def type_array(self, p):
-		return ArrayType( p[3], None,)
+		return ArrayType(p[3], None)
 		
 	@_("ARRAY index type_simple")
 	@_("ARRAY index type_array_sized")
 	def type_array_sized(self, p):
-		return ArrayType(p[2], p.index)
+		return ArrayType(p[2], p[1])
 		
 	@_("FUNCTION type_simple '(' opt_param_list ')'")
 	@_("FUNCTION type_array_sized '(' opt_param_list ')'")
-	def type_function(self, p):
+	def type_func(self, p):
 		return FuncType(p[1], p.opt_param_list)
 		
 	@_("empty")
