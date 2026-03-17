@@ -45,15 +45,15 @@ class Parser(sly.Parser):
 	# DECLARACIONES
 	# =================================================
 	
-	@_("ID ':' type_simple ';'")
+	@_("ID COLON type_simple SEMICOLON")
 	def decl(self, p):
 		return VarDecl(p.ID, p.type_simple)
 		
-	@_("ID ':' type_array_sized ';'")
+	@_("ID COLON type_array_sized SEMICOLON")
 	def decl(self, p):
 		return ListDecl(p.ID, p.type_array_sized)
 		
-	@_("ID ':' type_func ';'")
+	@_("ID COLON type_func SEMICOLON")
 	def decl(self, p):
 		return FuncDecl(p.ID, p.type_func)
 		
@@ -63,19 +63,19 @@ class Parser(sly.Parser):
 		
 	# === DECLARACIONES con inicialización
 	
-	@_("ID ':' type_simple '=' expr ';'")
+	@_("ID COLON type_simple ASSIGN expr SEMICOLON")
 	def decl_init(self, p):
 		return VarDecl(p.ID, p.type_simple, p.expr)
 		
-	@_("ID ':' CONSTANT '=' expr ';'")
+	@_("ID COLON CONSTANT ASSIGN expr SEMICOLON")
 	def decl_init(self, p):
 		return ConstDecl(p.ID, p.expr)
 		
-	@_("ID ':' type_array_sized '=' '{' opt_expr_list '}' ';'")
+	@_("ID COLON type_array_sized ASSIGN LBRACE opt_expr_list RBRACE SEMICOLON")
 	def decl_init(self, p):
 		return ListDecl(p.ID, p.type_array_sized, p.opt_expr_list)
 		
-	@_("ID ':' type_func '=' '{' opt_stmt_list '}'")
+	@_("ID COLON type_func ASSIGN LBRACE opt_stmt_list RBRACE")
 	def decl_init(self, p):
 		return FuncDecl(p.ID, p.type_func, p.opt_stmt_list)
 		
@@ -133,7 +133,7 @@ class Parser(sly.Parser):
 	def if_stmt_closed(self, p):
 		return IfStmt(p.if_cond, as_block(p.closed_stmt0), as_block(p.closed_stmt1))
 		
-	@_("IF '(' opt_expr ')'")
+	@_("IF LPAREN opt_expr RPAREN")
 	def if_cond(self, p):
 		return p.opt_expr
 	# -------------------------------------------------
@@ -148,7 +148,7 @@ class Parser(sly.Parser):
 	def for_stmt_open(self, p):
 		return ForStmt(p.for_header[0], p.for_header[1], p.for_header[2], as_block(p.open_stmt))
 		
-	@_("FOR '(' opt_expr ';' opt_expr ';' opt_expr ')'")
+	@_("FOR LPAREN opt_expr SEMICOLON opt_expr SEMICOLON opt_expr RPAREN")
 	def for_header(self, p):
 		return p.opt_expr0, p.opt_expr1, p.opt_expr2
 		
@@ -163,7 +163,7 @@ class Parser(sly.Parser):
 	def while_stmt_open(self, p):
 		return WhileStmt(p.while_cond, p.open_stmt)
 	
-	@_("WHILE '(' opt_expr ')'")
+	@_("WHILE LPAREN opt_expr RPAREN")
 	def while_cond(self, p):
 		return p.opt_expr
 		
@@ -177,30 +177,30 @@ class Parser(sly.Parser):
 	@_("continue_stmt")
 	@_("block_stmt")
 	@_("decl")
-	@_("expr ';'")
+	@_("expr SEMICOLON")
 	def simple_stmt(self, p):
 		return p[0]
 
 	# PRINT
-	@_("PRINT opt_expr_list ';'")
+	@_("PRINT opt_expr_list SEMICOLON")
 	def print_stmt(self, p):
 		return PrintStmt(p.opt_expr_list)
 		
 	# RETURN
-	@_("RETURN opt_expr ';'")
+	@_("RETURN opt_expr SEMICOLON")
 	def return_stmt(self, p):
 		return ReturnStmt(p.opt_expr)
 
-	@_("BREAK ';'")
+	@_("BREAK SEMICOLON")
 	def break_stmt(self, p):
 		return BreakStmt()
 
-	@_("CONTINUE ';'")
+	@_("CONTINUE SEMICOLON")
 	def continue_stmt(self, p):
 		return ContinueStmt()
 
 	# BLOCK
-	@_("'{' stmt_list '}'")
+	@_("LBRACE stmt_list RBRACE")
 	def block_stmt(self, p):
 		return Block(p.stmt_list)
 		
@@ -216,7 +216,7 @@ class Parser(sly.Parser):
 	def opt_expr_list(self, p):
 		return p.expr_list	
 		
-	@_("expr ',' expr_list")
+	@_("expr COMMA expr_list")
 	def expr_list(self, p):
 		return [p.expr] + p.expr_list
 		
@@ -240,7 +240,7 @@ class Parser(sly.Parser):
 	def expr(self, p):
 		return p.expr1
 		
-	@_("lval  '='  expr1")
+	@_("lval  ASSIGN  expr1")
 	@_("lval ADDEQ expr1")
 	@_("lval SUBEQ expr1")
 	@_("lval MULEQ expr1")
@@ -364,11 +364,11 @@ class Parser(sly.Parser):
 	def prefix(self, p):
 		return p.group
 		
-	@_("'(' expr ')'")
+	@_("LPAREN expr RPAREN")
 	def group(self, p):
 		return p.expr
 		
-	@_("ID '(' opt_expr_list ')'")
+	@_("ID LPAREN opt_expr_list RPAREN")
 	def group(self, p):
 		return Call(p.ID, p.opt_expr_list)
 		
@@ -381,7 +381,7 @@ class Parser(sly.Parser):
 		return p.factor
 		
 	# INDICE DE ARREGLO
-	@_("'[' expr ']'")
+	@_("LBRACKET expr RBRACKET")
 	def index(self, p):
 		return p.expr
 	
@@ -426,8 +426,8 @@ class Parser(sly.Parser):
 	def type_simple(self, p):
 		return SimpleType(p[0].lower())
 		
-	@_("ARRAY '[' ']' type_simple")
-	@_("ARRAY '[' ']' type_array")
+	@_("ARRAY LBRACKET RBRACKET type_simple")
+	@_("ARRAY LBRACKET RBRACKET type_array")
 	def type_array(self, p):
 		return ArrayType( p[3], None,)
 		
@@ -436,8 +436,8 @@ class Parser(sly.Parser):
 	def type_array_sized(self, p):
 		return ArrayType(p[2], p[1])
 		
-	@_("FUNCTION type_simple '(' opt_param_list ')'")
-	@_("FUNCTION type_array_sized '(' opt_param_list ')'")
+	@_("FUNCTION type_simple LPAREN opt_param_list RPAREN")
+	@_("FUNCTION type_array_sized LPAREN opt_param_list RPAREN")
 	def type_func(self, p):
 		return FuncType(p[1], p[3])
 		
@@ -449,7 +449,7 @@ class Parser(sly.Parser):
 	def opt_param_list(self, p):
 		return p.param_list
 		
-	@_("param_list ',' param")
+	@_("param_list COMMA param")
 	def param_list(self, p):
 		return p.param_list + [p.param]
 		
@@ -457,9 +457,9 @@ class Parser(sly.Parser):
 	def param_list(self, p):
 		return [p.param]
 		
-	@_("ID ':' type_simple")
-	@_("ID ':' type_array")
-	@_("ID ':' type_array_sized")
+	@_("ID COLON type_simple")
+	@_("ID COLON type_array")
+	@_("ID COLON type_array_sized")
 	def param(self, p):
 		return Param(p.ID, p[2])
 
