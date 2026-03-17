@@ -17,7 +17,13 @@ class Node:
     def __repr__(self):
         fields = ', '.join(f'{k}={v!r}' for k, v in self.__dict__.items())
         return f'{self.__class__.__name__}({fields})'
-    
+
+##Nodo para el programa completo
+
+class Program(Node):
+    def __init__(self, decls):
+        self.decls = decls                #Esto es para almacenar la lista de declaraciones del programa
+
 # Nodos literales. 
 
 class variable(Node):  
@@ -85,8 +91,13 @@ class FuncDecl(Node):
         self.func_type = func_type        #Esto es para almacenar el tipo de dato de la función
         self.body = body                  #Esto es para almacenar el cuerpo de la función, que puede ser una lista de sentencias o una expresión.
 
-##Nodo para el programa completo
+class ConstDecl(Node):
+    def __init__(self, name, type, value):
+        self.name = name                  #Esto es para almacenar el nombre de la constante
+        self.value = value                #Esto es para almacenar el valor de la constante  
 
-class Program(Node):
-    def __init__(self, decls):
-        self.decls = decls                #Esto es para almacenar la lista de declaraciones del programa    
+##Nodos para los statements simples
+
+class ReturnStmt(Node):
+    def __init__(self, value=0):
+        self.value = value                #Esto es para almacenar el valor de retorno de la función, que puede ser una expresión o una lista de sentencias. 

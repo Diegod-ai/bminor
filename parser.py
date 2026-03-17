@@ -59,7 +59,7 @@ class Parser(sly.Parser):
 		
 	@_("decl_init")
 	def decl(self, p):
-		...
+		return p.decl_init
 		
 	# === DECLARACIONES con inicialización
 	
@@ -69,7 +69,7 @@ class Parser(sly.Parser):
 		
 	@_("ID ':' CONSTANT '=' expr ';'")
 	def decl_init(self, p):
-		...
+		return ConstDecl(p.ID, p.expr)
 		
 	@_("ID ':' type_array_sized '=' '{' opt_expr_list '}' ';'")
 	def decl_init(self, p):
@@ -85,37 +85,37 @@ class Parser(sly.Parser):
 	
 	@_("stmt_list")
 	def opt_stmt_list(self, p):
-		...
+		return p.stmt_list
 		
 	@_("empty")
 	def opt_stmt_list(self, p):
-		...
+		return []
 		
 	@_("stmt stmt_list")
 	def stmt_list(self, p):
-		...
+		return [p.stmt] + p.stmt_list
 		
 	@_("stmt")
 	def stmt_list(self, p):
-		...
+		return [p.stmt]
 		
 	@_("open_stmt")
 	@_("closed_stmt")
 	def stmt(self, p):
-		...
+		return p[0]
 
 	@_("if_stmt_closed")
 	@_("for_stmt_closed")
 	@_("while_stmt_closed")
 	@_("simple_stmt")
 	def closed_stmt(self, p):
-		...
+		return p[0]
 
 	@_("if_stmt_open")
 	@_("for_stmt_open")
 	@_("while_stmt_open")
 	def open_stmt(self, p):
-		...
+		return p[0]
 
 	# -------------------------------------------------
 	# IF
@@ -181,7 +181,7 @@ class Parser(sly.Parser):
 	@_("decl")
 	@_("expr ';'")
 	def simple_stmt(self, p):
-		...
+		return p[0]
 
 	# PRINT
 	@_("PRINT opt_expr_list ';'")
@@ -191,7 +191,7 @@ class Parser(sly.Parser):
 	# RETURN
 	@_("RETURN opt_expr ';'")
 	def return_stmt(self, p):
-		...
+		return ReturnStmt(p.opt_expr)
 
 	@_("BREAK ';'")
 	def break_stmt(self, p):
@@ -212,11 +212,11 @@ class Parser(sly.Parser):
 	
 	@_("empty")
 	def opt_expr_list(self, p):
-		...
+		return []
 		
 	@_("expr_list")
 	def opt_expr_list(self, p):
-		...
+		return p.expr_list	
 		
 	@_("expr ',' expr_list")
 	def expr_list(self, p):
