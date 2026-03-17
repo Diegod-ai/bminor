@@ -96,7 +96,7 @@ class ConstDecl(Node):
         self.name = name                  #Esto es para almacenar el nombre de la constante
         self.value = value                #Esto es para almacenar el valor de la constante  
 
-##Nodos para los statements simples
+##Nodos para los statements simples 
 
 class ReturnStmt(Node):
     def __init__(self, value=0):
