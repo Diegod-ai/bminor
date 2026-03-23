@@ -7,6 +7,8 @@ from lexer  import Lexer
 from errors import error, errors_detected
 from model  import *
 
+from ast_printer import build_rich_tree
+from ast_printer import build_graphviz
 
 def _L(node, lineno):
 	node.lineno = lineno
@@ -530,4 +532,5 @@ if __name__ == '__main__':
 		ast = parse(txt)
 		
 		if not errors_detected():
-			print(ast)
+			tree = build_rich_tree(ast)
+			print(tree)

@@ -1,5 +1,0 @@
-x = 3 + 42 * (s - t)
-y = "hola mundo"
-z = 'a'
-a = 1.2
-ARRAY = 23
