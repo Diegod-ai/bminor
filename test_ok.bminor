@@ -1,0 +1,28 @@
+main: function integer(args:string) = {
+
+    x: integer = 10;
+    y: integer = 20;
+
+    result: integer = x + y * 2;
+
+    print(result);
+
+    if (result > 10) {
+        print("Mayor que 10");
+    } else {
+        print("Menor o igual a 10");
+    }
+
+    i: integer = 0;
+
+    while (i < 5) {
+        print(i);
+        i = i + 1;
+    }
+
+    for (i = 0; i < 3; i = i + 1) {
+        print(i);
+    }
+
+    return result;
+}

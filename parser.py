@@ -7,8 +7,8 @@ from lexer  import Lexer
 from errors import error, errors_detected
 from model  import *
 
-from ast_printer import build_rich_tree
-from ast_printer import build_graphviz
+from ast_printer import *
+
 
 def _L(node, lineno):
 	node.lineno = lineno
@@ -298,8 +298,8 @@ class Parser(sly.Parser):
 	def expr4(self, p):
 		return p.expr5
 		
-	@_("expr5 '+' expr6")
-	@_("expr5 '-' expr6")
+	@_("expr5 PLUS expr6")
+	@_("expr5 MINUS expr6")
 	def expr5(self, p):
 		return BinaryOp(p[1], p.expr5, p.expr6)
 		
@@ -307,9 +307,9 @@ class Parser(sly.Parser):
 	def expr5(self, p):
 		return p.expr6
 		
-	@_("expr6 '*' expr7")
-	@_("expr6 '/' expr7")
-	@_("expr6 '%' expr7")
+	@_("expr6 TIMES expr7")
+	@_("expr6 DIVIDE expr7")
+	@_("expr6 MOD expr7")
 	def expr6(self, p):
 		return BinaryOp(p[1], p.expr6, p.expr7)
 		
@@ -317,7 +317,7 @@ class Parser(sly.Parser):
 	def expr6(self, p):
 		return p.expr7
 		
-	@_("expr7 '^' expr8")
+	@_("expr7 EXPONENT expr8")
 	def expr7(self, p):
 		return BinaryOp("^", p.expr7, p.expr8)
 		
@@ -325,8 +325,8 @@ class Parser(sly.Parser):
 	def expr7(self, p):
 		return p.expr8
 		
-	@_("'-' expr8")
-	@_("'!' expr8")
+	@_("MINUS expr8")
+	@_("LNOT expr8")
 	def expr8(self, p):
 		return UnaryOp(p[0], p.expr8)
 
@@ -534,3 +534,6 @@ if __name__ == '__main__':
 		if not errors_detected():
 			tree = build_rich_tree(ast)
 			print(tree)
+
+			graph = build_graphviz(ast)
+			graph.render('ast', format='png', cleanup=True)
