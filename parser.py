@@ -37,7 +37,8 @@ class Parser(sly.Parser):
 	
 	@_("decl decl_list")
 	def decl_list(self, p):
-		return [p.decl] + p.decl_list
+		head = [p.decl] if p.decl is not None else []
+		return head + p.decl_list
 		
 	@_("empty")
 	def decl_list(self, p):
@@ -49,15 +50,15 @@ class Parser(sly.Parser):
 	
 	@_("ID COLON type_simple SEMICOLON")
 	def decl(self, p):
-		return VarDecl(p.ID, p.type_simple)
+		return _L(VarDecl(p.ID, p.type_simple), p.lineno)
 		
 	@_("ID COLON type_array_sized SEMICOLON")
 	def decl(self, p):
-		return ListDecl(p.ID, p.type_array_sized)
+		return _L(ListDecl(p.ID, p.type_array_sized), p.lineno)
 		
 	@_("ID COLON type_func SEMICOLON")
 	def decl(self, p):
-		return FuncDecl(p.ID, p.type_func)
+		return _L(FuncDecl(p.ID, p.type_func), p.lineno)
 		
 	@_("decl_init")
 	def decl(self, p):
@@ -67,19 +68,19 @@ class Parser(sly.Parser):
 	
 	@_("ID COLON type_simple ASSIGN expr SEMICOLON")
 	def decl_init(self, p):
-		return VarDecl(p.ID, p.type_simple, p.expr)
+		return _L(VarDecl(p.ID, p.type_simple, p.expr), p.lineno)
 		
 	@_("ID COLON CONSTANT ASSIGN expr SEMICOLON")
 	def decl_init(self, p):
-		return ConstDecl(p.ID, p.expr)
+		return _L(ConstDecl(p.ID, p.expr), p.lineno)
 		
 	@_("ID COLON type_array_sized ASSIGN LBRACE opt_expr_list RBRACE SEMICOLON")
 	def decl_init(self, p):
-		return ListDecl(p.ID, p.type_array_sized, p.opt_expr_list)
+		return _L(ListDecl(p.ID, p.type_array_sized, p.opt_expr_list), p.lineno)
 		
 	@_("ID COLON type_func ASSIGN LBRACE opt_stmt_list RBRACE")
 	def decl_init(self, p):
-		return FuncDecl(p.ID, p.type_func, p.opt_stmt_list)
+		return _L(FuncDecl(p.ID, p.type_func, p.opt_stmt_list), p.lineno)
 		
 	# =================================================
 	# STATEMENTS
@@ -95,11 +96,12 @@ class Parser(sly.Parser):
 		
 	@_("stmt stmt_list")
 	def stmt_list(self, p):
-		return [p.stmt] + p.stmt_list
+		head = [p.stmt] if p.stmt is not None else []
+		return head + p.stmt_list
 		
 	@_("stmt")
 	def stmt_list(self, p):
-		return [p.stmt]
+		return [p.stmt] if p.stmt is not None else []
 		
 	@_("open_stmt")
 	@_("closed_stmt")
@@ -125,15 +127,15 @@ class Parser(sly.Parser):
 	
 	@_("if_cond closed_stmt ELSE if_stmt_open")
 	def if_stmt_open(self, p):
-		return IfStmt(p.if_cond, as_block(p.closed_stmt), as_block(p.if_stmt_open))
+		return _L(IfStmt(p.if_cond, as_block(p.closed_stmt), as_block(p.if_stmt_open)), p.lineno)
   
 	@_("if_cond stmt")
 	def if_stmt_open(self, p):
-		return IfStmt(p.if_cond, as_block(p.stmt))
+		return _L(IfStmt(p.if_cond, as_block(p.stmt)), p.lineno)
   
 	@_("if_cond closed_stmt ELSE closed_stmt")
 	def if_stmt_closed(self, p):
-		return IfStmt(p.if_cond, as_block(p.closed_stmt0), as_block(p.closed_stmt1))
+		return _L(IfStmt(p.if_cond, as_block(p.closed_stmt0), as_block(p.closed_stmt1)), p.lineno)
 		
 	@_("IF LPAREN opt_expr RPAREN")
 	def if_cond(self, p):
@@ -144,11 +146,11 @@ class Parser(sly.Parser):
 	
 	@_("for_header closed_stmt")
 	def for_stmt_closed(self, p):
-		return ForStmt(p.for_header[0], p.for_header[1], p.for_header[2], as_block(p.closed_stmt))
+		return _L(ForStmt(p.for_header[0], p.for_header[1], p.for_header[2], as_block(p.closed_stmt)), p.lineno)
 		
 	@_("for_header open_stmt")
 	def for_stmt_open(self, p):
-		return ForStmt(p.for_header[0], p.for_header[1], p.for_header[2], as_block(p.open_stmt))
+		return _L(ForStmt(p.for_header[0], p.for_header[1], p.for_header[2], as_block(p.open_stmt)), p.lineno)
 		
 	@_("FOR LPAREN opt_expr SEMICOLON opt_expr SEMICOLON opt_expr RPAREN")
 	def for_header(self, p):
@@ -159,11 +161,11 @@ class Parser(sly.Parser):
 	# -------------------------------------------------
 	@_("while_cond closed_stmt")
 	def while_stmt_closed(self, p):
-		return WhileStmt(p.while_cond, as_block(p.closed_stmt))
+		return _L(WhileStmt(p.while_cond, as_block(p.closed_stmt)), p.lineno)
 
 	@_("while_cond open_stmt")
 	def while_stmt_open(self, p):
-		return WhileStmt(p.while_cond, p.open_stmt)
+		return _L(WhileStmt(p.while_cond, p.open_stmt), p.lineno)
 	
 	@_("WHILE LPAREN opt_expr RPAREN")
 	def while_cond(self, p):
@@ -186,25 +188,50 @@ class Parser(sly.Parser):
 	# PRINT
 	@_("PRINT opt_expr_list SEMICOLON")
 	def print_stmt(self, p):
-		return PrintStmt(p.opt_expr_list)
-		
+		return _L(PrintStmt(p.opt_expr_list), p.lineno)
+
 	# RETURN
 	@_("RETURN opt_expr SEMICOLON")
 	def return_stmt(self, p):
-		return ReturnStmt(p.opt_expr)
+		return _L(ReturnStmt(p.opt_expr), p.lineno)
 
 	@_("BREAK SEMICOLON")
 	def break_stmt(self, p):
-		return BreakStmt()
+		return _L(BreakStmt(), p.lineno)
 
 	@_("CONTINUE SEMICOLON")
 	def continue_stmt(self, p):
-		return ContinueStmt()
+		return _L(ContinueStmt(), p.lineno)
+
+	# RETURN sin ";"
+	@_("RETURN opt_expr error")
+	def return_stmt(self, p):
+		lineno = getattr(p.opt_expr, 'lineno', p.lineno) if p.opt_expr else p.lineno
+		error('se esperaba ";" después de "return"', lineno=lineno)
+		return _L(ReturnStmt(p.opt_expr), p.lineno)
+
+	# PRINT sin ";"
+	@_("PRINT opt_expr_list error")
+	def print_stmt(self, p):
+		error('se esperaba ";" después de "print"', lineno=p.lineno)
+		return _L(PrintStmt(p.opt_expr_list), p.lineno)
+
+	# BREAK sin ";"
+	@_("BREAK error")
+	def break_stmt(self, p):
+		error('se esperaba ";" después de "break"', lineno=p.lineno)
+		return _L(BreakStmt(), p.lineno)
+
+	# CONTINUE sin ";"
+	@_("CONTINUE error")
+	def continue_stmt(self, p):
+		error('se esperaba ";" después de "continue"', lineno=p.lineno)
+		return _L(ContinueStmt(), p.lineno)
 
 	# BLOCK
 	@_("LBRACE stmt_list RBRACE")
 	def block_stmt(self, p):
-		return Block(p.stmt_list)
+		return _L(Block(p.stmt_list), p.lineno)
 		
 	# =================================================
 	# EXPRESIONES
@@ -249,7 +276,7 @@ class Parser(sly.Parser):
 	@_("lval DIVEQ expr1")
 	@_("lval MODEQ expr1")
 	def expr1(self, p):
-		return Assign(p[1], p.lval, p.expr1)
+		return _L(Assign(p[1], p.lval, p.expr1), p.lineno)
 		
 	@_("expr2")
 	def expr1(self, p):
@@ -259,11 +286,11 @@ class Parser(sly.Parser):
 	
 	@_("ID")
 	def lval(self, p):
-		return Variable(p.ID)
+		return _L(Variable(p.ID), p.lineno)
 		
 	@_("ID index")
 	def lval(self, p):
-		return ArrayAccess(p.ID, p.index)
+		return _L(ArrayAccess(p.ID, p.index), p.lineno)
 		
 	# -------------------------------------------------
 	# OPERADORES
@@ -271,7 +298,7 @@ class Parser(sly.Parser):
 	
 	@_("expr2 LOR expr3")
 	def expr2(self, p):
-		return BinaryOp("||", p.expr2, p.expr3)
+		return _L(BinaryOp("||", p.expr2, p.expr3), p.lineno)
 
 	@_("expr3")
 	def expr2(self, p):
@@ -279,7 +306,7 @@ class Parser(sly.Parser):
 		
 	@_("expr3 LAND expr4")
 	def expr3(self, p):
-		return BinaryOp("&&", p.expr3, p.expr4)
+		return _L(BinaryOp("&&", p.expr3, p.expr4), p.lineno)
 		
 	@_("expr4")
 	def expr3(self, p):
@@ -292,7 +319,7 @@ class Parser(sly.Parser):
 	@_("expr4 GT expr5")
 	@_("expr4 GE expr5")
 	def expr4(self, p):
-		return BinaryOp(p[1], p.expr4, p.expr5)
+		return _L(BinaryOp(p[1], p.expr4, p.expr5), p.lineno)
 
 	@_("expr5")
 	def expr4(self, p):
@@ -301,7 +328,7 @@ class Parser(sly.Parser):
 	@_("expr5 PLUS expr6")
 	@_("expr5 MINUS expr6")
 	def expr5(self, p):
-		return BinaryOp(p[1], p.expr5, p.expr6)
+		return _L(BinaryOp(p[1], p.expr5, p.expr6), p.lineno)
 		
 	@_("expr6")
 	def expr5(self, p):
@@ -311,7 +338,7 @@ class Parser(sly.Parser):
 	@_("expr6 DIVIDE expr7")
 	@_("expr6 MOD expr7")
 	def expr6(self, p):
-		return BinaryOp(p[1], p.expr6, p.expr7)
+		return _L(BinaryOp(p[1], p.expr6, p.expr7), p.lineno)
 		
 	@_("expr7")
 	def expr6(self, p):
@@ -319,7 +346,7 @@ class Parser(sly.Parser):
 		
 	@_("expr7 EXPONENT expr8")
 	def expr7(self, p):
-		return BinaryOp("^", p.expr7, p.expr8)
+		return _L(BinaryOp("^", p.expr7, p.expr8), p.lineno)
 		
 	@_("expr8")
 	def expr7(self, p):
@@ -328,7 +355,7 @@ class Parser(sly.Parser):
 	@_("MINUS expr8")
 	@_("LNOT expr8")
 	def expr8(self, p):
-		return UnaryOp(p[0], p.expr8)
+		return _L(UnaryOp(p[0], p.expr8), p.lineno)
 
 	@_("expr9")
 	def expr8(self, p):
@@ -344,11 +371,11 @@ class Parser(sly.Parser):
 
 	@_("postfix INC")
 	def postfix(self, p):
-		return PostfixOp("++", p.postfix)
+		return _L(PostfixOp("++", p.postfix), p.lineno)
 
 	@_("postfix DEC")
 	def postfix(self, p):
-		return PostfixOp("--", p.postfix)
+		return _L(PostfixOp("--", p.postfix), p.lineno)
 
 	@_("prefix")
 	def primary(self, p):
@@ -356,11 +383,11 @@ class Parser(sly.Parser):
 
 	@_("INC prefix")
 	def prefix(self, p):
-		return PrefixOp("++", p.prefix)
+		return _L(PrefixOp("++", p.prefix), p.lineno)
 
 	@_("DEC prefix")
 	def prefix(self, p):
-		return PrefixOp("--", p.prefix)
+		return _L(PrefixOp("--", p.prefix), p.lineno)
 
 	@_("group")
 	def prefix(self, p):
@@ -372,11 +399,11 @@ class Parser(sly.Parser):
 		
 	@_("ID LPAREN opt_expr_list RPAREN")
 	def group(self, p):
-		return Call(p.ID, p.opt_expr_list)
+		return _L(Call(p.ID, p.opt_expr_list), p.lineno)
 		
 	@_("ID index")
 	def group(self, p):
-		return ArrayAccess(p.ID, p.index)
+		return _L(ArrayAccess(p.ID, p.index), p.lineno)
 		
 	@_("factor")
 	def group(self, p):
@@ -393,27 +420,27 @@ class Parser(sly.Parser):
 	
 	@_("ID")
 	def factor(self, p):
-		return Variable(p.ID)
+		return _L(Variable(p.ID), p.lineno)
 		
 	@_("LITERAL_INTEGER")
 	def factor(self, p):
-		return IntegerLiteral(p.LITERAL_INTEGER)
+		return _L(IntegerLiteral(p.LITERAL_INTEGER), p.lineno)
 		
 	@_("LITERAL_FLOAT")
 	def factor(self, p):
-		return FloatLiteral(p.LITERAL_FLOAT)
+		return _L(FloatLiteral(p.LITERAL_FLOAT), p.lineno)
 		
 	@_("LITERAL_CHAR")
 	def factor(self, p):
-		return CharLiteral(p.LITERAL_CHAR)
+		return _L(CharLiteral(p.LITERAL_CHAR), p.lineno)
 		
 	@_("LITERAL_STRING")
 	def factor(self, p):
-		return StringLiteral(p.LITERAL_STRING)
+		return _L(StringLiteral(p.LITERAL_STRING), p.lineno)
 
 	@_("TRUE", "FALSE")
 	def factor(self, p):
-		return BooleanLiteral(p[0])
+		return _L(BooleanLiteral(p[0]), p.lineno)
 		
 	# =================================================
 	# TIPOS
@@ -466,6 +493,28 @@ class Parser(sly.Parser):
 		return Param(p.ID, p[2])
 
 	# =================================================
+	# RECUPERACIÓN DE ERRORES
+	# =================================================
+
+	# Salta hasta el próximo ";" y descarta la sentencia inválida
+	@_("error SEMICOLON")
+	def simple_stmt(self, p):
+		return None   # filtrado en stmt_list / decl_list
+
+	# Sentencia sin ";" justo antes de "}" → reporta y devuelve None
+	# El RBRACE queda en el flujo para cerrar el bloque correctamente.
+	@_("error RBRACE")
+	def simple_stmt(self, p):
+		# Devolvemos el RBRACE al parser para que cierre el bloque
+		self.errok()
+		return None
+
+	# Salta hasta el próximo "}" si falta cerrar un bloque
+	@_("LBRACE error RBRACE")
+	def block_stmt(self, p):
+		return _L(Block([]), p.lineno)
+
+	# =================================================
 	# UTILIDAD: EMPTY
 	# =================================================
 	
@@ -473,10 +522,43 @@ class Parser(sly.Parser):
 	def empty(self, p):
 		pass
 		
+	# Tokens que normalmente abren una sentencia nueva.
+	# Si el parser los encuentra en un lugar inesperado
+	# es muy probable que falte ";" en la línea anterior.
+	_STMT_STARTERS = {
+		'ID', 'IF', 'WHILE', 'FOR', 'RETURN', 'PRINT',
+		'BREAK', 'CONTINUE', 'LBRACE',
+		'INTEGER', 'FLOAT', 'BOOLEAN', 'CHAR', 'STRING',
+		'VOID', 'FUNCTION', 'ARRAY', 'CONSTANT', 'AUTO',
+	}
+
 	def error(self, p):
-		lineno = p.lineno if p else 'EOF'
-		value = repr(p.value) if p else 'EOF'
-		error(f'Syntax error at {value}', lineno)
+		if p is None:
+			error('fin de archivo inesperado — ¿falta cerrar un bloque "}"?')
+			return
+
+		lineno = p.lineno
+		value  = p.value
+
+		if p.type in self._STMT_STARTERS:
+			# El token parece iniciar una nueva sentencia →
+			# lo más probable es que falte ";" en la línea anterior.
+			prev = lineno - 1
+			error(
+				f'se esperaba ";" al final de la línea {prev} '
+				f'(se encontró {value!r} en la línea {lineno})',
+				lineno=prev,
+			)
+		elif p.type == 'RBRACE':
+			error(f'"}}": llave de cierre inesperada', lineno=lineno)
+		elif p.type == 'RPAREN':
+			error(f'")": paréntesis de cierre inesperado', lineno=lineno)
+		elif p.type == 'RBRACKET':
+			error(f'"]": corchete de cierre inesperado', lineno=lineno)
+		elif p.type == 'ASSIGN':
+			error(f'"=": asignación inesperada — ¿falta declarar la variable?', lineno=lineno)
+		else:
+			error(f'token inesperado {value!r}', lineno=lineno)
 		
 # ===================================================
 # Utilidad: convertir algo en bloque si no lo es

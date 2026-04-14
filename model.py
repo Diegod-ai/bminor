@@ -1,4 +1,4 @@
- # model.py
+# model.py
 
 
 """ 
@@ -54,17 +54,35 @@ class BooleanLiteral(Node):
 
 class SimpleType(Node):
     def __init__(self,name):
-        self.name = name                  #Esto es para almacenar el nombre del tipo de dato, por ejemplo "int", "float", "bool", "string" etc.
+        self.name = name
+
+    def __eq__(self, other):
+        return isinstance(other, SimpleType) and self.name == other.name
+
+    def __hash__(self):
+        return hash(self.name)
 
 class ArrayType(Node):
     def __init__ (self, element_type, size):
-        self.size = size                  #Esto es para almacenar el tamaño del array, por ejemplo 10, 20, etc.
-        self.element_type = element_type  #Esto es para almacenar el tipo de dato del elemento del array, por ejemplo "int", "float", "bool", "string" etc.
+        self.size = size
+        self.element_type = element_type
+
+    def __eq__(self, other):
+        return isinstance(other, ArrayType) and self.element_type == other.element_type and self.size == other.size
+
+    def __hash__(self):
+        return hash(('array', str(self.element_type), str(self.size)))
 
 class FuncType(Node):
     def __init__(self, return_type, param_types):
-        self.return_type = return_type    #Esto es para almacenar el tipo de dato de retorno de la función, por ejemplo "int", "float", "bool", "string" etc.
-        self.param_types = param_types    #Esto es para almacenar los tipos de datos de los parámetros de la función, por ejemplo ["int", "float"], ["string"], etc.
+        self.return_type = return_type
+        self.param_types = param_types
+
+    def __eq__(self, other):
+        return isinstance(other, FuncType) and self.return_type == other.return_type and self.param_types == other.param_types
+
+    def __hash__(self):
+        return hash(('func', str(self.return_type)))
 
 class Param(Node):
     def __init__(self, name, type):
