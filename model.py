@@ -12,8 +12,24 @@ Por ejemplo, la función "factor" recibe un token llamado "LITERAL_INTEGER", ent
 Esta clase llamada "node" es la clase base para el AST, tiene como función almacenar la información de la línea sobre la que esta el parser, 
 esto para poder reportar el errore en la línea correcta, el metodo '__repr__' es para imprimirla de manera legible
 """
+
+class Visitor:
+    """
+    Clase base para todos los visitantes del AST.
+    Cada subclase sobrecarga visit() para cada tipo de nodo
+    que necesita procesar.
+    """
+    def visit(self, node):
+        raise NotImplementedError(
+            f"{self.__class__.__name__} no implementa visit para {type(node).__name__}"
+        )
+
 class Node:
     lineno = 0
+    
+    def accept(self, visitor: Visitor):
+        return visitor.visit(self)
+    
     def __repr__(self):
         fields = ', '.join(f'{k}={v!r}' for k, v in self.__dict__.items())
         return f'{self.__class__.__name__}({fields})'

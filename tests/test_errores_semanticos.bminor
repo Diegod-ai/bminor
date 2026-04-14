@@ -1,0 +1,12 @@
+aux: function integer(n: integer) = {
+    return n;
+}
+
+main: function integer(args: string) = {
+    x: integer = variable_no_declarada + 1;
+    duplicada: integer = 5;
+    duplicada: integer = 10;
+    duplicada();
+    y: integer = aux(duplicada, x);
+    return y;
+}

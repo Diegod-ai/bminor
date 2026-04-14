@@ -1,0 +1,4 @@
+main: function integer(args: string) = {
+    x: integer = 10 @ 5;
+    return x;
+}

@@ -1,0 +1,11 @@
+main: function integer(args: string) = {
+    x: integer = 10;
+    y: float = 3.14;
+    return y;
+}
+
+suma: function integer(a: integer, b: integer) = {
+    break;
+    continue;
+    return a + b;
+}
