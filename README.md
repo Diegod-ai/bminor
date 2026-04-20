@@ -16,9 +16,8 @@ bpp/
 ├── ast_printer.py  # Utilidades de visualización del AST
 ├── errors.py       # Gestión centralizada de errores con Rich
 ├── main.py         # Punto de entrada principal del compilador
-└── tests/
-    ├── good/       # Programas semánticamente correctos
-    └── bad/        # Programas con errores semánticos
+└── tests/          # Programas de prueba para corroborar el correcto funcionamiento del compilador 
+   
 ```
 
 ---
@@ -27,7 +26,7 @@ bpp/
 
 ### `lexer.py`
 
-Implementado con la librería `sly`. Reconoce los tokens del lenguaje B++:
+Implementado con la librería `sly`. Reconoce los tokens del lenguaje B-Minor:
 
 - **Palabras reservadas:** `array`, `boolean`, `char`, `integer`, `string`, `void`, `float`, `const`, `if`, `else`, `for`, `while`, `return`, `function`, `print`, `auto`, `break`, `continue`, `true`, `false`
 - **Operadores aritméticos:** `+`, `-`, `*`, `/`, `%`, `^`, `++`, `--`
