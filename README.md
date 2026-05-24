@@ -16,8 +16,6 @@ bminor/
 ├── ast_printer.py  # Utilidades de visualización del AST
 ├── errors.py       # Gestión centralizada de errores
 └── tests/
-    ├── good/       # Programas semánticamente correctos
-    └── bad/        # Programas con errores semánticos
 ```
  
 ---
