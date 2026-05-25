@@ -1,6 +1,6 @@
-# Compilador B++ — Analizador Semántico
+# Compilador B — Analizador Semántico
 
-Proyecto desarrollado para el curso de **Compiladores**. Implementa las fases de análisis léxico, sintáctico y semántico para el lenguaje **B++** (`.bminor`), un lenguaje fuertemente tipado de propósito educativo.
+Proyecto desarrollado para el curso de **Compiladores**. Implementa las fases de análisis léxico, sintáctico y semántico para el lenguaje **B** (`.bminor`), un lenguaje fuertemente tipado de propósito educativo.
 
 ---
 
